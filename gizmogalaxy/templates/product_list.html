@@ -20,7 +20,7 @@
     <div class="row">
         {% for product in product_row %}
         <div class="col-4">
-            <a href="{% url 'product_details' %}"><img src="{{ product.image.url }}"></a>
+            <a href="{% url 'product_details' product.id %}"><img src="{{ product.image.url }}"></a>
             <h4>{{ product.name }}</h4>
             <div class="rating">
                 {% with rating=product.rating|add:"0" %}

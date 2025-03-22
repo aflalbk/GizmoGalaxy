@@ -16,18 +16,35 @@
                         <span onclick="register()">Register</span>
                         <hr id="Indicator">
                     </div>
-                    <form id="LoginForm">
-                        <input type="text" placeholder="Username">
-                        <input type="password" placeholder="Password">
-                        <button type="submit" class="btn">Login</button>
+                    {% if messages %}
+                    <div >
+                        {% for message in messages%}
+                            {% if message.tags == "error" %}
+                                <p style="color: red; font-size: 12px;">{{ message }}</p><br>
+                            {% elif message.tags == "success" %}
+                                <p style="color: green; font-size: 12px;">{{ message }}</p><br>
+                            {% endif %}
+                        {% endfor%}
+                    </div>
+                    {% endif %}
+                    <form id="LoginForm" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <input type="text" name="username" required placeholder="Username">
+                        <input type="password" name="password" required placeholder="Password">
+                        <button type="submit" name="log_in" class="btn">Login</button>
                         <a href="">Forget Password</a>
                     </form>
 
-                    <form id="RegForm">
-                        <input type="text" placeholder="Username">
-                        <input type="email" placeholder="Email">
-                        <input type="password" placeholder="Password">
-                        <button type="submit" class="btn">Register</button>
+                    <form id="RegForm" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <input type="text" name="username" maxlength="30" minlength="5" required placeholder="Username">
+                        <input type="email" name="email" maxlength="30" required placeholder="Email">
+                        <input type="password" name="password" required placeholder="Password">
+                        <input type="text" name="address" maxlength="30" minlength="5" required placeholder="Address">
+                        <input type="text" name="phone" maxlength="30" minlength="5" required placeholder="phone number">
+
+
+                        <button type="submit" name="register" class="btn">Register</button>
                     </form>
                 </div>
             </div>

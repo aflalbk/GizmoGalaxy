@@ -12,6 +12,17 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 from pathlib import Path
 
+from dotenv import load_dotenv
+
+# Load environment variables from .env
+load_dotenv()
+
+# Use variables in Django settings
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
+DATABASE_URL = os.getenv('DATABASE_URL')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 

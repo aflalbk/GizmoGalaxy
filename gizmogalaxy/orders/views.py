@@ -2,14 +2,18 @@ from django.shortcuts import render, redirect
 from . models import Order, OrderedItem
 from product.models import Product
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
+
+@login_required(login_url='log_in_or_register')
 def order(request):
     customer = request.user
     user_cart, create = Order.objects.get_or_create(owner=customer, order_status = Order.cart_stage)
 
     return render(request, 'order.html', {'user_cart':user_cart})
 
+@login_required(login_url='log_in_or_register')
 def add_to_cart(request):
     if request.POST:
         customer = request.user
@@ -33,11 +37,13 @@ def add_to_cart(request):
         return redirect('order')
     return render(request, 'product_list.html')
 
+@login_required(login_url='log_in_or_register')
 def remove_item(request, pk):
     orderd_item = OrderedItem.objects.get(id=pk)
     orderd_item.delete()
     return redirect('order')
 
+@login_required(login_url='log_in_or_register')
 def proceed_to_buy(request):
     if request.POST:
         try:    
@@ -65,4 +71,10 @@ def proceed_to_buy(request):
             messages.error(request, status_message)
     return redirect('order')
 
+@login_required(login_url='log_in_or_register')
+def order_history(request):
+    customer = request.user
 
+    all_orders = Order.objects.filter(owner=customer).exclude(order_status=Order.cart_stage)
+
+    return render(request, 'order_history.html', {'orders':all_orders})

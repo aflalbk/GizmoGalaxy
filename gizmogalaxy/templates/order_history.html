@@ -1,0 +1,52 @@
+{% extends 'blank_layout.html' %}
+{% load static %}
+{% load get_order_status %}
+
+
+{% block content %}
+{% if messages %}
+<div style="margin: 10%">
+    <div class="empty-cart" >
+        {% for message in messages%}
+            {% if  message.tags == "error" %}
+                <p style="color: red; font-size: 12px;">{{ message }}</p><br>
+                <a href="{% url 'product_list' %}" class="shop-button">Browse Products</a>
+            {% elif message.tags == "success" %}
+                <p style="color: green; font-size: 12px;">{{ message }}</p><br>
+                <a href="{% url 'product_list' %}" class="shop-button">Browse Products</a>
+            {% endif %}
+        {% endfor%}
+    </div>
+</div>
+{% else %}
+
+<div class="small-container cart-page">
+    {% if orders %}
+    <table>
+        <tbody><tr>
+            <th>Order Id</th>
+            <th>Order Date</th>
+            <th>Total Price</th>
+            <th>Status</th>
+        </tr>
+        {% for order in orders %}
+            <tr>
+                <td>{{ order.id }}</td>
+                <td>{{ order.created_on }}</td>
+                <td>{{ order.total_price }}</td>
+                <td>{% get_order_status order.order_status %}</td>
+            </tr>
+        {% endfor %}
+    </tbody></table>
+    {% else %}
+    <div class="empty-cart">
+        <p>Your order history is empty.</p>
+        <p>Start shopping to view your past orders.</p>
+        <a href="{% url 'order' %}" class="shop-button">Go To Cart</a>
+    </div>
+    {% endif %}
+
+    
+</div>
+{% endif %}
+{% endblock content %}

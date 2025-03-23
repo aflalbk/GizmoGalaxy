@@ -1,84 +1,87 @@
 {% extends 'blank_layout.html' %}
 {% load static %}
+{% load multiply %}
+{% load get_total %}
+
 
 {% block content %}
+{% if messages %}
+<div style="margin: 10%">
+    <div class="empty-cart" >
+        {% for message in messages%}
+            {% if  message.tags == "error" %}
+                <p style="color: red; font-size: 12px;">{{ message }}</p><br>
+                <a href="{% url 'product_list' %}" class="shop-button">Browse Products</a>
+            {% elif message.tags == "success" %}
+                <p style="color: green; font-size: 12px;">{{ message }}</p><br>
+                <a href="{% url 'product_list' %}" class="shop-button">Browse Products</a>
+            {% endif %}
+        {% endfor%}
+    </div>
+</div>
+{% else %}
+
 <div class="small-container cart-page">
+    {% if user_cart.added_items.all %}
     <table>
         <tbody><tr>
             <th>Product</th>
             <th>Quantity</th>
             <th>Subtotal</th>
         </tr>
+        {% for cart_item in user_cart.added_items.all %}
         <tr>
             <td>
                 <div class="cart-info">
-                    <img src="{% static 'images/buy-1.jpg' %}">
+                    <a href="{% url 'product_details' cart_item.product.id %}"><img src="{{ cart_item.product.image.url }}"></a>
                     <div>
-                        <p>Red Printed T-Shirt</p>
-                        <small>Price: $50.00</small>
+                        <a href="{% url 'product_details' cart_item.product.id %}"><p>"{{ cart_item.product.name }}"</p></a>
+                        <small>Price: &#8377;{{ cart_item.product.price }}</small>
                         <br>
-                        <a href="">Remove</a>
+                        <a href="{% url 'remove_item' cart_item.id %}">Remove</a>
                     </div>
                 </div>
             </td>
-            <td><input type="number" value="1"></td>
-            <td>$50.00</td>
+            <td><input type="number" disabled value="{{ cart_item.quantity }}"></td>
+            <td>&#8377;{% multiply cart_item.product.price cart_item.quantity %}</td>
         </tr>
-        <tr>
-            <td>
-                <div class="cart-info">
-                    <img src="{% static 'images/buy-2.jpg' %}">
-                    <div>
-                        <p>Red Printed T-Shirt</p>
-                        <small>Price: $50.00</small>
-                        <br>
-                        <a href="">Remove</a>
-                    </div>
-                </div>
-            </td>
-            <td><input type="number" value="1"></td>
-            <td>$50.00</td>
-        </tr>
-        <tr>
-            <td>
-                <div class="cart-info">
-                    <img src="{% static 'images/buy-3.jpg' %}">
-                    <div>
-                        <p>Red Printed T-Shirt</p>
-                        <small>Price: $50.00</small>
-                        <br>
-                        <a href="">Remove</a>
-                    </div>
-                </div>
-            </td>
-            <td><input type="number" value="1"></td>
-            <td>$50.00</td>
-        </tr>
+        {% endfor %}
     </tbody></table>
     <div class="total-price" >
         <table>
             <tbody><tr>
                 <td>Subtotal</td>
-                <td>$200.00</td>
+                <td>&#8377;{% get_subtotal user_cart %}</td>
             </tr>
             <tr>
                 <td>Tax</td>
-                <td>$35.00</td>
+                <td>&#8377;{% get_tax user_cart %}</td>
             </tr>
             <tr>
                 <td>Total</td>
-                <td>$230.00</td>
+                <td>&#8377;{% get_total user_cart %}</td>
             </tr>
             <tr>
                 <td><div>
-                        <button class="btn" >Proceed to Buy</button>
+                    <form action="{% url 'proceed_to_buy' %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <input type="hidden" name="total", value="{% get_total user_cart %}">
+                        <button class="btn" type="submit" >Proceed to Buy</button>
+                    </form>
                 </div></td>
             </tr>
         </tbody></table>
         
         
     </div>
+    {% else %}
+    <div class="empty-cart">
+        <p>Your Cart is Empty</p>
+        <p>Add products to continue shopping.</p>
+        <a href="{% url 'product_list' %}" class="shop-button">Browse Products</a>
+    </div>
+    {% endif %}
     
 </div>
-
+{% endif %}
 {% endblock content %}

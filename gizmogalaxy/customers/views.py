@@ -35,13 +35,10 @@ def log_in_or_register(request):
 
     if request.POST and 'log_in' in request.POST:
         context["register"]=False # For login and register tabs to show correctly
-
         username = request.POST.get("username")
         password = request.POST.get("password")
         user = authenticate(username=username, password=password)
-        print(user)
-        print(user.is_authenticated)
-        if user:
+        if user is not None and user.is_authenticated:
             login(request, user)
             return redirect('index')
         else:
